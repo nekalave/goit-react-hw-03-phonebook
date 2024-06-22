@@ -5,13 +5,13 @@ import ContactForm from './PhonebookPage/ContactForm/ContactForm';
 import ContactsList from './PhonebookPage/ContactsList/ContactsList';
 import Filter from './PhonebookPage/Filter/Filter';
 
+let INITIAL_STATE = JSON.parse(localStorage.getItem('contacts'))
+
+
 class App extends Component {
   state = {
     contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+      ...INITIAL_STATE
     ],
     filter: '',
   };
@@ -27,9 +27,11 @@ class App extends Component {
     if (duplicateContact) {
       alert(`${name} is already in contacts.`);
     } else {
-      this.setState(prevState => ({
-        contacts: [...prevState.contacts, { name, number, id: nanoid() }],
-      }));
+      const newContact = { name, number, id: nanoid() };
+      const updatedContacts = [...contacts, newContact];
+
+      this.setState({ contacts: updatedContacts });
+      localStorage.setItem("contacts", JSON.stringify(updatedContacts));
     }
   }
 
@@ -43,9 +45,11 @@ class App extends Component {
   };
 
   handleDeleteContact = contactId => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactId)
-    }));
+    this.setState(prevState => {
+      const updatedContacts = prevState.contacts.filter(contact => contact.id !== contactId);
+      localStorage.setItem("contacts", JSON.stringify(updatedContacts));
+      return { contacts: updatedContacts };
+    });
   };
 
   render() {
